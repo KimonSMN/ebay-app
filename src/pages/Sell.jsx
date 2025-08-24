@@ -7,8 +7,9 @@ import 'leaflet/dist/leaflet.css'
 const Sell = () => {
     return (
     <div className='flex justify-center h-screen'>
-        <div className='w-1/3 h- m-10 bg-red-100'>
-            <h1 className='m-8 font-bold text-2xl'>Create Auction</h1>
+        <div className='w-1/3 m-10 border-gray-300 border-1 rounded-sm'>
+            <h1 className='m-8 ml-4 mb-0 font-bold text-2xl'>List Your Item</h1>
+            <h2 className='text-sm ml-4 mb-2 mt-2 text-gray-500'>Fill out the details below to create your listing. Make sure to include clear photos and accurate descriptions.</h2>
             <div className='m-4 shadow-lg border-1 border-gray-300 max-w rounded-sm bg-white'>
                 <h2 className='m-4 mb-2 text-lg font-bold'>Auction Details</h2>
                 <div className='flex' >
@@ -31,7 +32,7 @@ const Sell = () => {
                         />
                     </div>
                 </div>
-                <EntryField title={"Description"} placeholder={"Write a detailed description of the item..."} large={true}/>   
+                <EntryField title={"Description"} placeholder={"Describe your item in detail. Include any defects, features, or important information buyers should know."} large={true}/>   
                 <div className='w-full h-64 p-4 rounded overflow-hidden'>
                     <MapContainer center={[51.505, -0.09]} zoom={15} scrollWheelZoom={false} className='h-full w-full'>
                     <TileLayer
@@ -39,11 +40,7 @@ const Sell = () => {
                     url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                     />
 
-                    <Marker position={[51.505, -0.09]}>
-                        {/* <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                        </Popup> */}
-                    </Marker>
+                    <Marker position={[51.505, -0.09]}/>
                     </MapContainer>
                 </div>
                 

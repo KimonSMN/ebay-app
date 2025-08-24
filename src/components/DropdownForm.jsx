@@ -6,7 +6,10 @@ const DropdownForm = ({ fields }) => {
       {fields.map(({ label, name, options }) => (
         <div key={name} className="flex-1 flex flex-col">
           <label className="mb-2 text-md font-medium">{label}</label>
-          <select name={name} className="border border-gray-300 rounded p-2 w-full">
+          <select name={name} className="border border-gray-300 rounded p-2 w-full" defaultValue="">
+          <option value="" disabled hidden>
+            Select a category
+          </option>
             {options.map(option => (
               <option key={option} value={option}>{option}</option>
             ))}
