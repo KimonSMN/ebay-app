@@ -1,6 +1,6 @@
-import React from 'react'
-import SideBarSection from '../components/SideBarSection.jsx'
-import CategoriesPanel from '../components/CategoriesPanel.jsx'
+import React from "react";
+import SideBarSection from "../components/SideBarSection.jsx";
+import CategoriesPanel from "../components/CategoriesPanel.jsx";
 
 const SideBar = () => {
   return (
@@ -17,8 +17,7 @@ const SideBar = () => {
         </SideBarSection>
       </div>
     </div>
-  )
-}
+  );
+};
 
-
-export default SideBar
+export default SideBar;
