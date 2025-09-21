@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [activeTab, setActiveTab] = React.useState("signIn");
@@ -14,6 +13,8 @@ const LoginForm = () => {
   const [address, setAddress] = useState("");
   const [country, setCountry] = useState("");
   const [vat, setVat] = useState("");
+
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
   const [loginUsername, setLoginUsername] = useState("");
@@ -32,16 +33,27 @@ const LoginForm = () => {
 
     const data = await res.json();
 
-    if (res.status === 403) return alert("Your account is awaiting approval.");
-    if (!res.ok) return alert(data.message || "Login failed.");
+    if (res.status === 403) {
+      navigate("/pending-approval", {
+        replace: true,
+        state: { username: loginUsername },
+      });
+      return;
+    }
+    if (!res.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
     navigate("/main", { replace: true });
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setErrors({});
 
+    let res, data;
     try {
-      const res = await fetch("http://localhost:3000/api/signup", {
+      res = await fetch("http://localhost:3000/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -57,32 +69,62 @@ const LoginForm = () => {
           vat,
         }),
       });
-
-      const data = await res.json();
-
-      if (res.status === 409) {
-        alert("Username already exists");
-        return;
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
       }
-      if (res.status === 400) {
-        alert(data.message);
-        return;
-      }
-      if (!res.ok) {
-        alert(data.message || "Unexpected error");
-        return;
-      }
-
-      // Success
-      alert(data.message);
-      setUsername("");
-      setPassword("");
-      setConfirmPassword("");
-      setActiveTab("signIn");
     } catch (err) {
       console.error(err);
       alert("Network error");
+      return;
     }
+
+    if (res.status === 409) {
+      const code = data.code || "";
+      const msg = (data.message || "").toLowerCase();
+
+      if (code === "USERNAME_TAKEN" || msg.includes("username")) {
+        setErrors({
+          username:
+            "That username is already in use. Please choose a different one.",
+        });
+        return;
+      }
+      if (code === "EMAIL_TAKEN" || msg.includes("email")) {
+        setErrors({
+          email: "That email is already registered. Try another email address.",
+        });
+        return;
+      }
+      alert(data.message || "Conflict");
+      return;
+    }
+
+    if (res.status === 400) {
+      alert(data.message || "Please review your inputs.");
+      return;
+    }
+
+    if (!res.ok) {
+      alert(data.message || "Unexpected error");
+      return;
+    }
+
+    alert(data.message || "Account created.");
+    // clear form…
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+    setName("");
+    setSurname("");
+    setEmail("");
+    setTel("");
+    setAddress("");
+    setCountry("");
+    setVat("");
+    setErrors({});
+    setActiveTab("signIn");
   };
 
   return (
@@ -153,14 +195,25 @@ const LoginForm = () => {
           </form>
         ) : activeTab === "register" ? (
           <form onSubmit={handleRegister} className="mt-3 space-y-3">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded"
-              required
-            />
+            <div>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  if (errors.username)
+                    setErrors((p) => ({ ...p, username: undefined }));
+                }}
+                className={`w-full border p-2 rounded ${
+                  errors.username ? "border-red-500" : "border-gray-300"
+                }`}
+                required
+              />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+              )}
+            </div>
 
             <div className="grid grid-cols-2 gap-2">
               <input
@@ -200,14 +253,25 @@ const LoginForm = () => {
               />
             </div>
 
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded"
-              required
-            />
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email)
+                    setErrors((p) => ({ ...p, email: undefined }));
+                }}
+                className={`w-full border p-2 rounded ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
+                required
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
 
             <div className="grid grid-cols-2 gap-2">
               <input
